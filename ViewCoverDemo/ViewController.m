@@ -20,14 +20,16 @@
     
     UIImage *meiziImage = [UIImage imageNamed:@"meizi.jpg"];
     self.view.layer.contents = (__bridge id)meiziImage.CGImage;
+    
+    [self showRectWithCenterPoint3:self.view.center];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self.view];
-    
-    [self showRectWithCenterPoint:point];
-}
+//- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+//{
+//    CGPoint point = [[touches anyObject] locationInView:self.view];
+//    
+//    [self showRectWithCenterPoint:point];
+//}
 
 /**
  *  第一种使用view覆盖的方式来显示选中
@@ -89,6 +91,25 @@
     rectLayer.backgroundColor = [UIColor redColor].CGColor;
     [maskLayer addSublayer:rectLayer];
     bgLayer.mask = maskLayer;
+}
+
+/**
+ * 第三种使用layer遮盖的方式来显示选中
+ *
+ *  @param centerPoint 选中的中心坐标
+ */
+- (void)showRectWithCenterPoint3:(CGPoint)centerPoint
+{
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.frame = self.view.bounds;
+    maskLayer.fillColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.6].CGColor;
+    maskLayer.fillRule = kCAFillRuleEvenOdd;
+    
+    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithArcCenter:centerPoint radius:100 startAngle:0 endAngle:M_PI * 2 clockwise:NO];
+    [bezierPath appendPath:[UIBezierPath bezierPathWithRect:maskLayer.frame]];
+    maskLayer.path = bezierPath.CGPath;
+    bezierPath.usesEvenOddFillRule = YES;
+    [self.view.layer addSublayer:maskLayer];
 }
 
 @end
